@@ -1,0 +1,68 @@
+{
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.CognitiveServices/accounts/deployments"
+        },
+        {
+          "anyOf": [
+            {
+              "not": {
+                "field": "Microsoft.CognitiveServices/accounts/deployments/model.format",
+                "in": "[parameters('allowedModels')]"
+              }
+            },
+            {
+              "not": {
+                "field": "Microsoft.CognitiveServices/accounts/deployments/sku.name",
+                "in": "[parameters('allowedSkus')]"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]"
+    }
+  },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "What to do when a deployment is non-compliant."
+      },
+      "allowedValues": [
+        "Audit",
+        "Deny"
+      ],
+      "defaultValue": "Deny"
+    },
+    "allowedModels": {
+      "type": "Array",
+      "metadata": {
+        "displayName": "Allowed model formats",
+        "description": "Only deployments whose model.format (Provider) is in this list will be allowed."
+      },
+      "defaultValue": [
+        "OpenAI"
+      ]
+    },
+    "allowedSkus": {
+      "type": "Array",
+      "metadata": {
+        "displayName": "Allowed SKUs",
+        "description": "Only deployments whose sku.name is in this list will be allowed."
+      },
+      "defaultValue": [
+        "Standard",
+        "DataZoneStandard",
+        "DataZoneBatch"
+      ]
+    }
+  }
+}
